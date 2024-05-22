@@ -1,5 +1,7 @@
 mod greet;
 mod call;
+mod sort;
+mod search;
 
 fn main() {
     println!("Hello, world")
