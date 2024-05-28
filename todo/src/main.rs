@@ -8,7 +8,7 @@ fn main() {
 
     if args.len() > 1 {
         let command = &args[1];
-        match &command[..] {
+        match command.as_str() {
             "list" => read_todos(),
             "add" => add_todos(&args[2]),
             "help" | _ => help()
@@ -38,11 +38,12 @@ fn add_todos(todo: &str) {
     let mut writer = BufWriter::new(file);
     let content = format!("{}\n", todo);
     writer.write_all(content.as_bytes()).expect("Failed to read to file");
+    writer.flush().unwrap()
 }
 
 #[test]
 fn test_add_todo() {
-    add_todos("Eat lunch")
+    add_todos("Buy coffee")
 }
 
 fn help() {
