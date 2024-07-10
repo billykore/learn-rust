@@ -346,7 +346,7 @@ mod model {
 
     impl User {
         pub fn say_hi(&self, name: &str) {
-            println!("Hi {}, I am {}", name, self.name)
+            println!("Hi {}, I am {}, {} years old", name, self.name, self.age)
         }
     }
 }
