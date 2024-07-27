@@ -30,6 +30,7 @@ Select an option:
     2. Add Todo
     3. Delete Todo
     4. Complete Todo
+    5. Reset
     0. Exit
         ")
     }
@@ -45,6 +46,7 @@ Select an option:
             "2" => self.add_todo_option(),
             "3" => self.delete_todo_option(),
             "4" => self.complete_todo_option(),
+            "5" => self.reset_option(),
             "0" => self.exit_option(),
             _ => self.display()
         }
@@ -71,6 +73,10 @@ Select an option:
         self.todo_list.complete_todo(id.parse::<usize>().unwrap())
     }
 
+    fn reset_option(&mut self) {
+        self.todo_list.reset();
+    }
+
     fn exit_option(&mut self) {
         self.keep_going = false
     }
@@ -80,7 +86,7 @@ Select an option:
         let stdin = io::stdin();
         let line = stdin.lock().lines().next().unwrap().unwrap();
         println!();
-        return line
+        return line;
     }
 }
 

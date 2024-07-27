@@ -36,6 +36,10 @@ impl TodoList {
     pub fn complete_todo(&mut self, id: usize) {
         self.todos[id].set_completed(true)
     }
+
+    pub fn reset(&mut self) {
+        self.todos.clear()
+    }
 }
 
 
@@ -46,7 +50,7 @@ fn test_new_todo_list() {
 }
 
 #[test]
-fn get_all() {
+fn test_get_all() {
     let mut list = TodoList::new();
     list.get_all();
 
@@ -71,6 +75,18 @@ fn test_delete() {
     assert_eq!(1, list.len());
 
     list.delete(0);
+    assert_eq!(0, list.len())
+}
+
+#[test]
+fn test_reset() {
+    let mut list = TodoList::new();
+    list.add(Todo::new("Title", "Description"));
+    list.add(Todo::new("Title", "Description"));
+    list.add(Todo::new("Title", "Description"));
+    assert_eq!(3, list.len());
+
+    list.reset();
     assert_eq!(0, list.len())
 }
 
