@@ -12,7 +12,7 @@ fn sum_array(nums: [i32; 5]) -> i32 {
     for i in nums {
         sum += i;
     }
-    return sum;
+    sum
 }
 
 #[test]
@@ -26,7 +26,7 @@ fn factorial(n: i32) -> i32 {
     for i in 1..=n {
         res *= i;
     }
-    return res;
+    res
 }
 
 #[test]
@@ -48,7 +48,7 @@ fn fizzbuzz(i: i32) -> String {
         res.push_str(&*i.to_string());
     }
 
-    return res;
+    res
 }
 
 #[test]
@@ -600,7 +600,9 @@ struct Category {
 }
 
 use std::fmt::{Debug, Formatter};
+use std::num::ParseIntError;
 use std::ops::Deref;
+use std::str::FromStr;
 
 impl Debug for Category {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -951,4 +953,102 @@ fn test_macro() {
 
     iterate!([1, 2, 3, 4, 5]);
     iterate!(1, 2, 3, 4, 5);
+}
+
+trait Pedestrian {
+    fn talk(&self);
+    fn walk(&self);
+    fn run(&self);
+}
+
+enum PoliceUnit {
+    City,
+    State,
+    Federal,
+    FBI,
+    SWAT,
+}
+
+enum Feel {
+    Happy,
+    Neutral,
+    Sad,
+    Angry
+}
+
+impl Feel {
+    fn express(&self) {
+        match self {
+            Feel::Happy =>  println!("Happy"),
+            Feel::Neutral => println!("Neutral"),
+            Feel::Sad => println!("Sad"),
+            Feel::Angry => println!("Angry")
+        }
+    }
+}
+
+#[test]
+fn test_talk_with_feel() {
+    let sad = Feel::Sad;
+    sad.express()
+}
+
+struct Police {
+    health: u64,
+    feel: Feel,
+    unit: PoliceUnit,
+}
+
+impl Pedestrian for Police {
+    fn talk(&self) {
+        self.feel.express()
+    }
+
+    fn walk(&self) {
+        println!("Walk");
+    }
+
+    fn run(&self) {
+        println!("Run");
+    }
+}
+
+struct Resident {
+    health: u64,
+    feel: Feel,
+}
+
+impl Pedestrian for Resident {
+    fn talk(&self) {
+        self.feel.express()
+    }
+
+    fn walk(&self) {
+        println!("Walk");
+    }
+
+    fn run(&self) {
+        println!("Run");
+    }
+}
+
+struct Num {
+    x: u64
+}
+
+impl FromStr for Num {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.parse::<u64>() {
+            Ok(x) => Ok(Num { x }),
+            Err(err) => panic!("{}", err)
+        }
+    }
+}
+
+#[test]
+fn test_num() {
+   let num = Num::from_str("5").unwrap();
+    assert_eq!(num.x, 5);
 }
