@@ -5,6 +5,7 @@ use crate::chapter_two::{parse_args, replace};
 mod chapter_one;
 mod chapter_two;
 mod chapter_three;
+mod chapter_four;
 
 fn main() {
     let args = parse_args();

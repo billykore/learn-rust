@@ -1,3 +1,5 @@
+use regex::Regex;
+
 /// # Chapter 3. Fundamental Types
 ///
 /// Programming Rust
@@ -128,7 +130,6 @@ fn test_bool_type() {
 /// but uses the UTF-8 encoding for strings and streams of
 /// text. So, a String represents its text as a sequence of UTF-8 bytes,
 /// not as an array of characters.
-
 #[test]
 fn test_char_type() {
     assert_eq!('*' as i32, 42);
@@ -196,6 +197,10 @@ fn test_boxes_type() {
 /// However, you may only dereference raw pointers within an unsafe block.
 /// An unsafe block is Rust’s opt-in mechanism for advanced language features
 /// whose safety is up to you.
+#[test]
+fn test_raw_pointer() {
+
+}
 
 /// # Arrays, Vectors, and Slices
 ///
@@ -244,4 +249,266 @@ fn test_arrays() {
 
     let kb = [0u8; 1024];
     assert_eq!(kb.len(), 1024);
+
+    let mut chaos = [3, 5, 4, 1, 2];
+    chaos.sort();
+    assert_eq!(chaos, [1, 2, 3, 4, 5]);
+}
+
+/// # Vectors
+///
+/// A vector `Vec<T>` is a resizable array of elements of type `T`,
+/// allocated on the heap.
+#[test]
+fn test_vector_vec_macro() {
+    let mut primes = vec![2, 3, 5, 7];
+    assert_eq!(primes.iter().product::<i32>(), 210);
+
+    primes.push(11);
+    primes.push(13);
+    assert_eq!(primes.iter().product::<i32>(), 30030);
+}
+
+fn new_pixel_buffer(rows: usize, cols: usize) -> Vec<u8> {
+    vec![0; rows * cols]
+}
+
+#[test]
+fn test_new_pixel_buffer() {
+    let buffer = new_pixel_buffer(100, 100);
+    assert_eq!(buffer.len(), 10000);
+}
+
+#[test]
+fn test_vector_vec_new() {
+    let mut pal = Vec::new();
+    pal.push("step");
+    pal.push("on");
+    pal.push("no");
+    pal.push("pets");
+    assert_eq!(pal, vec!["step", "on", "no", "pets"]);
+}
+
+#[test]
+fn test_vector_create_from_iterator() {
+    let v: Vec<i32> = (0..5).collect();
+    assert_eq!(v, [0, 1, 2, 3, 4]);
+}
+
+#[test]
+fn test_vector_slice_method() {
+    // A palindrome!
+    let mut palindrome = vec!["a man", "a plan", "a canal", "panama"];
+    palindrome.reverse();
+    // Reasonable yet disappointing:
+    assert_eq!(palindrome, vec!["panama", "a canal", "a plan", "a man"]);
+}
+
+#[test]
+fn test_vector_len_and_capacity() {
+    let mut v = Vec::with_capacity(2);
+    assert_eq!(v.len(), 0);
+    assert_eq!(v.capacity(), 2);
+
+    v.push(1);
+    v.push(2);
+    assert_eq!(v.len(), 2);
+    assert_eq!(v.capacity(), 2);
+
+    v.push(3);
+    assert_eq!(v.len(), 3);
+    // Typically prints "capacity is now 4":
+    println!("capacity is now {}", v.capacity());
+}
+
+#[test]
+fn test_vector_insert_and_remove_element() {
+    let mut v = vec![10, 20, 30, 40, 50];
+    // Make the element at index 3 be 35.
+    v.insert(3, 35);
+    assert_eq!(v, [10, 20, 30, 35, 40, 50]);
+    // Remove the element at index 1.
+    v.remove(1);
+    assert_eq!(v, [10, 30, 35, 40, 50]);
+}
+
+#[test]
+fn test_vector_pop() {
+    let mut v = vec!["Snow Puff", "Glass Gem"];
+    assert_eq!(v.pop(), Some("Glass Gem"));
+    assert_eq!(v.pop(), Some("Snow Puff"));
+    assert_eq!(v.pop(), None);
+}
+
+/// # Slices
+///
+/// A slice, written `[T]` without specifying the length, is a region of an array or vector.
+/// Since a slice can be any length, slices can’t be stored directly in variables or passed
+/// as function arguments. Slices are always passed by reference.
+#[test]
+fn test_slices() {
+    let v: Vec<f64> = vec![0.0, 0.707, 1.0, 0.707];
+    let a: [f64; 4] = [0.0, -0.707, -1.0, -0.707];
+
+    let sv: &[f64] = &v;
+    let sa: &[f64] = &a;
+
+    println!("{:?}", sv);
+    println!("{:?}", sa);
+}
+
+/// # String Types
+///
+/// ## String Literals
+/// Are enclosed in double quotes.
+/// They use the same backslash escape sequences as char literals:
+#[test]
+fn test_string_literals() {
+    let speech = "\"Ouch!\" said the well.\n";
+    println!("{}", speech);
+
+    println!("In the room the women come and go,
+        Singing of Mount Abora");
+
+    println!("It was a bright, cold day in April, and \
+        there were four of us—\
+        more or less.");
+}
+
+#[test]
+fn test_raw_string() {
+    let default_win_install_path = r"C:\Program Files\Gorillas";
+    let pattern = Regex::new(r"\d+(\.\d+)*").expect("Invalid regular expression");
+    println!("{}", pattern.is_match(default_win_install_path));
+
+    println!(r###"
+        This raw string started with 'r###"'.
+        Therefore it does not end until we reach a quote mark ('"')
+        followed immediately by three pound signs ('###'):
+    "###);
+}
+
+/// ## Byte Strings
+///
+/// A string literal with the b prefix is a byte string.
+/// Such a string is a slice of u8 values—that is, bytes—rather than Unicode text:
+#[test]
+fn test_byte_strings() {
+    let method = b"GET";
+    assert_eq!(method, &[b'G', b'E', b'T']);
+}
+
+/// ## Strings in Memory
+///
+/// Rust strings are sequences of Unicode characters,
+/// but they are not stored in memory as arrays of chars.
+/// Instead, they are stored using UTF-8, a variable-width encoding.
+/// Each ASCII character in a string is stored in one byte.
+/// Other characters take up multiple bytes.
+#[test]
+fn test_strings_in_memory() {
+    let noodles = "noodles".to_string();
+    let oodles = &noodles[1..];
+
+    println!("{}", noodles);
+    println!("{}", oodles);
+}
+
+/// ## `String`
+///
+/// `&str` is very much like `&[T]`: a fat pointer to some data.
+/// `String` is analogous to `Vec<T>`.
+///
+/// There are several ways to create `String`s:
+///
+/// 1. The `.to_string()` method converts a `&str` to a `String`. This copies the string:
+#[test]
+fn test_to_string() {
+    let error_message = "too many pets".to_string();
+    println!("{}", error_message);
+}
+
+/// 2. The `format!()` macro works just like `println!()`,
+/// except that it returns a new `String` instead of writing text to stdout,
+/// and it doesn’t automatically add a newline at the end:
+#[test]
+fn test_format_macro() {
+    assert_eq!(format!("{}°{:02}′{:02}″N", 24, 5, 23), "24°05′23″N".to_string());
+}
+
+/// 3. Arrays, slices, and vectors of strings have two methods, 
+/// `.concat()` and .`join(sep)`, that form a new `String` from many strings:
+#[test]
+fn test_concat_and_join() {
+    let bits = vec!["veni", "vidi", "vici"];
+    assert_eq!(bits.concat(), "venividivici");
+    assert_eq!(bits.join(", "), "veni, vidi, vici");
+}
+
+/// ## Using Strings
+///
+/// Strings support the == and != operators.
+/// Strings also support the comparison operators <, <=, >, and >=.
+/// Two strings are equal if they contain the same characters in the same order (regardless of
+/// whether they point to the same location in memory):
+#[test]
+fn test_using_strings() {
+    assert_eq!("ONE".to_lowercase(), "one");
+    assert!("peanut".contains("nut"));
+    assert_eq!("_".replace("", "■"), "■_■");
+    assert_eq!(" clean\n".trim(), "clean");
+    for word in "veni, vidi, vici".split(", ") {
+        assert!(word.starts_with("v"));
+    }
+}
+
+/// ## Other String-Like Types
+///
+/// Rust guarantees that strings are valid UTF-8.
+/// Sometimes a program really needs to be able to deal with strings that are not valid Unicode.
+/// This usually happens when a Rust program has to interoperate with some other system that
+/// doesn’t enforce any such rules.
+///
+/// Rust’s solution is to offer a few string-like types for these situations:
+///
+/// 1. Stick to `String` and `&str` for Unicode text.
+///
+/// 2. When working with filenames, use `std::path::PathBuf` and `&Path` instead.
+///
+/// 3. When working with binary data that isn’t UTF-8 encoded at all, use `Vec<u8>` and `&[u8]`.
+///
+/// 4. When working with environment variable names and command-line arguments in the native form
+/// presented by the operating system, use `OsString` and `&OsStr`.
+///
+/// 5. When interoperating with C libraries that use null-terminated strings,
+/// use `std::ffi::CString` and `&CStr`.
+#[test]
+fn test_other_string_like_types() {
+
+}
+
+/// # Type Aliases
+///
+/// The type keyword can be used like typedef in C++ to declare a new name for an existing type:
+type Bytes = Vec<u8>;
+
+/// The type `Bytes` that we’re declaring here is shorthand for this particular kind of `Vec`:
+fn decode(bytes: &Bytes) {
+    println!("{:?}", bytes);
+}
+
+#[test]
+fn test_decode() {
+    decode(&Vec::new())
+}
+
+/// # Beyond the Basics
+///
+/// Types are a central part of Rust.
+/// We’ll continue talking about types and introducing new ones throughout the book.
+/// In particular, Rust’s user-defined types give the language much of its flavor,
+/// because that’s where methods are defined.
+#[test]
+fn test_beyond_the_basics() {
+
 }
