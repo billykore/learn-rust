@@ -600,7 +600,6 @@ struct Category {
 }
 
 use std::fmt::{Debug, Formatter};
-use std::num::ParseIntError;
 use std::ops::Deref;
 use std::str::FromStr;
 

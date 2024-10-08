@@ -6,6 +6,7 @@ mod chapter_one;
 mod chapter_two;
 mod chapter_three;
 mod chapter_four;
+mod chapter_five;
 
 fn main() {
     let args = parse_args();

@@ -86,7 +86,7 @@ Select an option:
         let stdin = io::stdin();
         let line = stdin.lock().lines().next().unwrap().unwrap();
         println!();
-        return line;
+        line
     }
 }
 
